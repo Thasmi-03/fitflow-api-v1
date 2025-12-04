@@ -9,6 +9,7 @@ import {
   updateCloth,
   deleteCloth,
   getSuggestions,
+  recordView,
 } from "../controllers/partnerClothesController.js";
 
 const router = express.Router();
@@ -27,5 +28,8 @@ router.get("/suggestions", verifyToken, verifyRole("styler"), getSuggestions);
 router.get("/:id", optionalAuthenticate, getClothById);
 router.put("/:id", verifyToken, updateCloth); // owner/admin check inside controller
 router.delete("/:id", verifyToken, deleteCloth);
+
+// Styler view tracking
+router.post("/:id/view", verifyToken, verifyRole("styler"), recordView);
 
 export default router;

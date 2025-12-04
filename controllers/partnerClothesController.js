@@ -352,3 +352,30 @@ export const getSuggestions = async (req, res) => {
     res.status(500).json({ error: "Server error: " + error.message });
   }
 };
+
+/** Record a view on a cloth (styler only) */
+export const recordView = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!isValidObjectId(id)) return res.status(400).json({ error: "Invalid ID" });
+
+    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+    if (req.user.role !== "styler") return res.status(403).json({ error: "Styler role required" });
+
+    const cloth = await PartnerCloth.findById(id);
+    if (!cloth) return res.status(404).json({ error: "Cloth not found" });
+
+    // Check if this styler already viewed (avoid duplicate views)
+    const alreadyViewed = cloth.views.some(v => String(v.stylerId) === String(req.user._id));
+
+    if (!alreadyViewed) {
+      cloth.views.push({ stylerId: req.user._id });
+      await cloth.save();
+    }
+
+    res.status(200).json({ message: "View recorded", viewCount: cloth.views.length });
+  } catch (error) {
+    console.error("Error in recordView:", error);
+    res.status(500).json({ error: "Server error: " + error.message });
+  }
+};

@@ -13,7 +13,15 @@ const PartnerClothSchema = new Schema(
     },
 
     color: { type: String, required: true, trim: true },
-    category: { type: String, required: true, trim: true },
+    
+    category: { 
+      type: String, 
+      required: true, 
+      enum: ['dress', 'shirt', 'pants', 'jacket', 'skirt', 'top', 'shorts',
+             'suit', 'blazer', 'sweater', 'coat', 'tshirt', 'frock',
+             'saree', 'kurta', 'lehenga'],
+      trim: true 
+    },
 
     
     brand: { type: String, required: true, trim: true },
@@ -24,12 +32,10 @@ const PartnerClothSchema = new Schema(
 
     description: { type: String, trim: true, default: "" },
 
-    occasion: {
+    occasion: [{
       type: String,
-      enum: ["casual", "formal", "business", "party", "wedding", "sports", "beach"],
-      default: "casual",
-      trim: true
-    },
+      enum: ["casual", "formal", "business", "party", "wedding", "sports", "beach"]
+    }],
 
     suitableSkinTones: [{
       type: String,
@@ -74,6 +80,11 @@ const PartnerClothSchema = new Schema(
   },
   { timestamps: true }
 );
+
+// Add validation for occasion array (1-4 items)
+PartnerClothSchema.path('occasion').validate(function(value) {
+  return value && value.length >= 1 && value.length <= 4;
+}, 'Please select between 1 and 4 occasions');
 
 
 PartnerClothSchema.index({ name: "text", color: "text", category: "text", brand: "text" });
