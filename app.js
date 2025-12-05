@@ -50,6 +50,13 @@ app.use("/api/styler", stylerRoutes);
 app.use("/api/occasion", occasionRoutes);
 
 // ===== Cloudinary upload route =====
+// Serve uploaded files statically
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+app.use("/api/uploads", express.static(join(__dirname, 'uploads')));
+
 app.use("/api/upload", uploadRoute);
 
 // Error handler (last)
