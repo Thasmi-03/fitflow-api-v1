@@ -92,7 +92,7 @@ export const createStylerCloth = async (req, res) => {
       gender: gender || undefined,
       age: age || undefined,
       note: note || undefined,
-      occasion: occasion || "casual",
+      occasion: occasion && occasion.length > 0 ? occasion : ["casual"],
       ownerId, // pass ObjectId instance
       visibility: visibility || "private",
     });
