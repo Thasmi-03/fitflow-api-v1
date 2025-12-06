@@ -1,3 +1,4 @@
+// 1st import & config like express, cors , library , enviroments variables load 
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -25,11 +26,12 @@ import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
+// 4 - json data understand
 app.use(express.json());
+// 3 - frontend promision 
 app.use(cors());
 
-// DB connect
+//  2 - DB connect
 connectDB().then(() => console.log("DB Connected Successfully!"));
 
 // Health check
