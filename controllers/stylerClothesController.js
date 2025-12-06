@@ -60,7 +60,7 @@ export const getStylerClothById = async (req, res) => {
     const isAdmin = req.user.role === "admin";
     if (!isOwner && !isAdmin) return res.status(403).json({ error: "Forbidden" });
 
-    res.status(200).json(cloth);
+    res.status(200).json({ cloth });
   } catch (error) {
     console.error("getStylerClothById error:", error);
     res.status(500).json({ error: error.message });
