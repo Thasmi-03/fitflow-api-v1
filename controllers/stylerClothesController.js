@@ -72,8 +72,15 @@ export const createStylerCloth = async (req, res) => {
     if (!req.user) return res.status(401).json({ error: "Unauthorized" });
     if (req.user.role !== "styler") return res.status(403).json({ error: "Styler role required" });
 
+    // Log incoming data for debugging
+    console.log("createStylerCloth - Request body:", JSON.stringify(req.body, null, 2));
+    console.log("createStylerCloth - User:", req.user._id, req.user.role);
+
     const { name, color, category, price, image, visibility, skinTone, gender, age, note, occasion } = req.body;
-    if (!name || !color || !category) return res.status(400).json({ error: "Missing required fields" });
+    if (!name || !color || !category) {
+      console.warn("createStylerCloth: Missing required fields", { name, color, category });
+      return res.status(400).json({ error: "Missing required fields" });
+    }
 
     // Ensure ownerId is valid ObjectId
     if (!isValidObjectId(req.user._id)) {
@@ -82,7 +89,11 @@ export const createStylerCloth = async (req, res) => {
     }
     const ownerId = new mongoose.Types.ObjectId(String(req.user._id));
 
-    const cloth = new StylerClothes({
+    // Validate occasion array
+    const occasionValue = occasion && Array.isArray(occasion) && occasion.length > 0 ? occasion : ["casual"];
+    console.log("createStylerCloth - Occasion value:", occasionValue);
+
+    const clothData = {
       name,
       color,
       category,
@@ -92,16 +103,32 @@ export const createStylerCloth = async (req, res) => {
       gender: gender || undefined,
       age: age || undefined,
       note: note || undefined,
-      occasion: occasion && occasion.length > 0 ? occasion : ["casual"],
+      occasion: occasionValue,
       ownerId, // pass ObjectId instance
       visibility: visibility || "private",
-    });
+    };
 
+    console.log("createStylerCloth - Creating cloth with data:", JSON.stringify(clothData, null, 2));
+
+    const cloth = new StylerClothes(clothData);
     const saved = await cloth.save();
+    
+    console.log("createStylerCloth - Successfully created cloth:", saved._id);
     res.status(201).json({ message: "Cloth created", cloth: saved });
   } catch (error) {
     console.error("createStylerCloth error:", error);
-    res.status(500).json({ error: error.message });
+    console.error("createStylerCloth error name:", error.name);
+    console.error("createStylerCloth error message:", error.message);
+    if (error.errors) {
+      console.error("createStylerCloth validation errors:", JSON.stringify(error.errors, null, 2));
+    }
+    res.status(500).json({ 
+      error: error.message,
+      details: error.errors ? Object.keys(error.errors).map(key => ({
+        field: key,
+        message: error.errors[key].message
+      })) : undefined
+    });
   }
 };
 

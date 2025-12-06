@@ -42,7 +42,7 @@ const StylerClothesSchema = new Schema(
 
     ownerId: {
       type: Schema.Types.ObjectId,
-      ref: "Styler",
+      ref: "User",
       required: true,
       index: true
     },
