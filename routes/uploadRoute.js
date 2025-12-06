@@ -12,6 +12,16 @@ router.post("/", upload.single("image"), async (req, res) => {
       return res.status(400).json({ success: false, message: "No file uploaded" });
     }
 
+    // Check for Cloudinary config
+    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      console.error("Missing Cloudinary configuration");
+      return res.status(500).json({ 
+        success: false, 
+        message: "Missing Cloudinary configuration on server",
+        details: "Please check CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in Vercel settings."
+      });
+    }
+
     // Upload buffer to Cloudinary
     const result = await uploadBufferToCloudinary(req.file.buffer, "fitflow");
     // result.secure_url contains the hosted image
@@ -22,7 +32,12 @@ router.post("/", upload.single("image"), async (req, res) => {
     });
   } catch (err) {
     console.error("Upload error:", err);
-    return res.status(500).json({ success: false, message: "Upload failed", details: err.message });
+    return res.status(500).json({ 
+        success: false, 
+        message: "Upload failed", 
+        details: err.message,
+        fullError: JSON.stringify(err, Object.getOwnPropertyNames(err))
+    });
   }
 });
 
