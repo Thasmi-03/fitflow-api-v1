@@ -6,7 +6,19 @@ import { uploadBufferToCloudinary } from "../utils/cloudinaryUpload.js";
 const router = express.Router();
 
 // Single file upload field name = "image" (make sure frontend uses name "image")
-router.post("/", upload.single("image"), async (req, res) => {
+router.post("/", (req, res, next) => {
+  upload.single("image")(req, res, (err) => {
+    if (err) {
+      console.error("Multer upload error:", err);
+      return res.status(400).json({ 
+        success: false, 
+        message: "File upload failed", 
+        details: err.message 
+      });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: "No file uploaded" });
