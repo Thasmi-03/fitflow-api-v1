@@ -1,6 +1,6 @@
 // utils/cloudinaryUpload.js
 import cloudinary from "cloudinary";
-import streamifier from "streamifier";
+import { Readable } from "stream";
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -17,6 +17,12 @@ export function uploadBufferToCloudinary(buffer, folder = "") {
         resolve(result);
       }
     );
-    streamifier.createReadStream(buffer).pipe(stream);
+    
+    // Create a readable stream from the buffer
+    const bufferStream = new Readable();
+    bufferStream.push(buffer);
+    bufferStream.push(null); // Signal end of stream
+    
+    bufferStream.pipe(stream);
   });
 }

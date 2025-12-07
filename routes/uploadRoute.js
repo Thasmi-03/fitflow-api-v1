@@ -34,8 +34,8 @@ router.post("/", upload.single("image"), async (req, res) => {
     console.error("Upload error:", err);
     return res.status(500).json({ 
         success: false, 
-        message: "Upload failed", 
-        details: err.message,
+        message: err.message || "Upload failed", 
+        details: err.error ? err.error.message : (err.message || "Unknown error"),
         fullError: JSON.stringify(err, Object.getOwnPropertyNames(err))
     });
   }
