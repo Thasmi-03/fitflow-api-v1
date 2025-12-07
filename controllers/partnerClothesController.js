@@ -98,7 +98,7 @@ export const getClothById = async (req, res) => {
     const { id } = req.params;
     if (!isValidObjectId(id)) return res.status(400).json({ error: "Invalid ID" });
 
-    const cloth = await PartnerCloth.findById(id);
+    const cloth = await PartnerCloth.findById(id).populate('ownerId', 'name location phone email');
     if (!cloth) return res.status(404).json({ error: "Cloth not found" });
 
     // Private cloth access
