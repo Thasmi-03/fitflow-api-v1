@@ -41,6 +41,16 @@ const UserSchema = new Schema(
     profilePhoto: {
       type: String,
     },
+    skinTone: {
+      type: String,
+      enum: ['fair', 'light', 'medium', 'tan', 'deep', 'dark', 'reddish', 'olive', 'pale'],
+    },
+    skinToneDetectedAt: {
+      type: Date,
+    },
+    preferredStyle: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

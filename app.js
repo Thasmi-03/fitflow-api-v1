@@ -17,6 +17,7 @@ import stylerRoutes from "./routes/stylerRoutes.js";
 import partnersPublicRoutes from "./routes/partnersPublicRoutes.js";
 import partnerRoutes from "./routes/partnerRoutes.js";
 import occasionRoutes from "./routes/occasionRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
 
 // Cloudinary upload route
 import uploadRoute from "./routes/uploadRoute.js";
@@ -50,6 +51,7 @@ app.use("/api/stylerclothes", stylerclothesRoutes);
 app.use("/api/partnerclothes", partnerclothesRoutes);
 app.use("/api/styler", stylerRoutes);
 app.use("/api/occasion", occasionRoutes);
+app.use("/api/ai", aiRoutes);
 
 // ===== Cloudinary upload route =====
 app.use("/api/upload", uploadRoute);
