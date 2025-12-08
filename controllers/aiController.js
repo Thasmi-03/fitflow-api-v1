@@ -66,7 +66,7 @@ export const detectSkinTone = async (req, res) => {
 
     console.log("[detectSkinTone] Initializing Gemini AI model...");
     const genAI = new GoogleGenerativeAI(process.env.VERTEX_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
 
     // Fetch the image and convert to base64 with timeout
     console.log("[detectSkinTone] Fetching image from URL...");
