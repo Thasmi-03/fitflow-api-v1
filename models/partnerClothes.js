@@ -19,7 +19,14 @@ const PartnerClothSchema = new Schema(
       required: true, 
       enum: ['dress', 'shirt', 'pants', 'jacket', 'skirt', 'top', 'shorts',
              'suit', 'blazer', 'sweater', 'coat', 'tshirt', 'frock',
-             'saree', 'kurta', 'lehenga'],
+             'saree', 'kurta', 'lehenga', 'churidar', 'kurti', 'gown', 
+             'salwar suit', 'anarkali', 'bridal wear', 'party wear', 
+             'crop top & skirt', 'tops & tunics', 't-shirt', 'jean pants', 
+             'palazzo', 'leggings', 'jackets / shrugs', 'nightwear', 
+             'maternity wear', 'abaya / burkha', 'men\'s shirt', 
+             'men\'s t-shirt', 'men\'s trouser', 'jeans', 'joggers', 
+             'hoodies', 'sweatshirts', 'sherwani', 'ethnic wear', 
+             'kids casual wear', 'newborn dress'],
       trim: true 
     },
 
