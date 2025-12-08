@@ -43,11 +43,11 @@ export const authenticate = async (req, res, next) => {
     }
 
     // Check if user is approved (only approved users can access protected routes)
-    if (!user.isApproved) {
-      return res.status(403).json({
-        error: "Account pending approval. Please wait for admin approval.",
-      });
-    }
+    // if (!user.isApproved) {
+    //   return res.status(403).json({
+    //     error: "Account pending approval. Please wait for admin approval.",
+    //   });
+    // }
 
     // Attach user to request object
     req.user = user;
