@@ -9,7 +9,7 @@ async function testAI() {
     console.log("API Key present:", !!process.env.VERTEX_API_KEY);
     
     const genAI = new GoogleGenerativeAI(process.env.VERTEX_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     
     const prompt = `Suggest suitable dress colors for a person with medium skin tone. Return ONLY a JSON object with this structure: { "recommendedColors": ["color1", "color2", "color3", "color4", "color5"], "advice": "short advice (max 2 sentences)" }. Do not include markdown formatting or backticks.`;
     
