@@ -168,6 +168,10 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
+    // Increment login count
+    user.loginCount = (user.loginCount || 0) + 1;
+    await user.save();
+
     // Generate token
     const token = generateToken(user._id);
 

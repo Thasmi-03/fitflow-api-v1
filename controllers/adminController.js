@@ -154,6 +154,12 @@ export const getAdminAnalytics = async (req, res) => {
     ]);
     const totalRevenue = revenueResult.length > 0 ? revenueResult[0].total : 0;
 
+    // Calculate total logins
+    const loginResult = await User.aggregate([
+      { $group: { _id: null, total: { $sum: "$loginCount" } } }
+    ]);
+    const totalLogins = loginResult.length > 0 ? loginResult[0].total : 0;
+
     // Weekly Trend (Last 4 weeks)
     const weeklyTrend = [];
     for (let i = 0; i < 4; i++) {
@@ -179,7 +185,8 @@ export const getAdminAnalytics = async (req, res) => {
         totalStylists,
         totalPartners,
         totalPayments,
-        totalRevenue
+        totalRevenue,
+        totalLogins
     });
   } catch (error) {
     console.error("Error fetching admin analytics:", error);

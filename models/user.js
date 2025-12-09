@@ -51,6 +51,10 @@ const UserSchema = new Schema(
     preferredStyle: {
       type: String,
     },
+    loginCount: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
