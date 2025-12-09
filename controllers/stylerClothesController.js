@@ -8,7 +8,7 @@ export const getMyStylerClothes = async (req, res) => {
   try {
     if (!req.user) return res.status(401).json({ error: "Unauthorized" });
 
-    const { search, category, color, minPrice, maxPrice, page = 1, limit = 10 } = req.query;
+    const { search, category, color, minPrice, maxPrice, skinTone, page = 1, limit = 10 } = req.query;
 
     // --- SAFER ownerId creation: use `new` and validate ---
     if (!isValidObjectId(req.user._id)) {
@@ -22,6 +22,7 @@ export const getMyStylerClothes = async (req, res) => {
 
     if (category) filter.category = category;
     if (color) filter.color = color;
+    if (skinTone) filter.skinTone = skinTone;
     if (minPrice) filter.price = { ...filter.price, $gte: Number(minPrice) };
     if (maxPrice) filter.price = { ...filter.price, $lte: Number(maxPrice) };
     if (search) filter.name = { $regex: search, $options: "i" };
