@@ -104,7 +104,8 @@ export const getClothById = async (req, res) => {
     // Private cloth access
     if (cloth.visibility === "private") {
       if (!req.user) return res.status(401).json({ error: "Unauthorized" });
-      const isOwner = String(cloth.ownerId) === String(req.user._id);
+      const ownerId = cloth.ownerId._id || cloth.ownerId;
+      const isOwner = String(ownerId) === String(req.user._id);
       const isAdmin = req.user.role === "admin";
       if (!isOwner && !isAdmin) return res.status(403).json({ error: "Access denied" });
     }
