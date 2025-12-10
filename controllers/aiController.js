@@ -88,7 +88,15 @@ export const detectSkinTone = async (req, res) => {
     }
 
     const base64Image = Buffer.from(imageResponse.data, 'binary').toString('base64');
-    const mimeType = imageResponse.headers['content-type'] || 'image/jpeg';
+    let mimeType = imageResponse.headers['content-type'] || 'image/jpeg';
+    
+    // Google Generative AI doesn't support AVIF, WebP, or some other formats
+    // Convert unsupported MIME types to JPEG
+    const supportedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (!supportedMimeTypes.includes(mimeType)) {
+      console.log(`[detectSkinTone] Unsupported MIME type ${mimeType}, converting to image/jpeg`);
+      mimeType = 'image/jpeg';
+    }
     console.log("[detectSkinTone] Image converted to base64, mimeType:", mimeType);
 
     const prompt = `Analyze this person's skin tone in the image and classify it into ONE of these categories ONLY: fair, light, medium, tan, deep, dark, reddish, olive, pale.
@@ -179,7 +187,15 @@ export const analyzeCloth = async (req, res) => {
     }
 
     const base64Image = Buffer.from(imageResponse.data, 'binary').toString('base64');
-    const mimeType = imageResponse.headers['content-type'] || 'image/jpeg';
+    let mimeType = imageResponse.headers['content-type'] || 'image/jpeg';
+    
+    // Google Generative AI doesn't support AVIF, WebP, or some other formats
+    // Convert unsupported MIME types to JPEG
+    const supportedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (!supportedMimeTypes.includes(mimeType)) {
+      console.log(`[analyzeCloth] Unsupported MIME type ${mimeType}, converting to image/jpeg`);
+      mimeType = 'image/jpeg';
+    }
 
     const prompt = `Analyze this clothing item.
     1. Identify suitable skin tones from this list ONLY: ['fair', 'light', 'medium', 'tan', 'deep', 'dark'].
