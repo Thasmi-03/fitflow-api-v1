@@ -184,11 +184,13 @@ export const analyzeCloth = async (req, res) => {
     const prompt = `Analyze this clothing item.
     1. Identify suitable skin tones from this list ONLY: ['fair', 'light', 'medium', 'tan', 'deep', 'dark'].
     2. Identify suitable occasions from this list ONLY: ['casual', 'formal', 'business', 'party', 'wedding', 'sports', 'beach'].
+    3. Identify the primary color from this list ONLY: ['red', 'blue', 'green', 'yellow', 'black', 'white', 'gray', 'brown', 'pink', 'purple', 'orange', 'beige', 'navy', 'maroon', 'teal', 'coral', 'multi', 'gold', 'silver'].
     
     Return ONLY a JSON object with this structure:
     {
       "suitableSkinTones": ["tone1", "tone2"],
-      "occasions": ["occasion1", "occasion2"]
+      "occasions": ["occasion1", "occasion2"],
+      "color": "detectedColor"
     }
     Do not include markdown or backticks.`;
 
