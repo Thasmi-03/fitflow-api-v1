@@ -22,11 +22,8 @@ export const getMyStylerClothes = async (req, res) => {
 
     if (category) filter.category = category;
     if (color) filter.color = color;
-    // skinTone is stored as comma-separated string (e.g., "fair,light,medium")
-    // Use regex to match if the skin tone appears in the list
-    if (skinTone) {
-      filter.skinTone = { $regex: new RegExp(`(^|,)${skinTone}(,|$)`), $options: 'i' };
-    }
+    // skinTone is now an array, MongoDB will match if the value is in the array
+    if (skinTone) filter.skinTone = skinTone;
     if (minPrice) filter.price = { ...filter.price, $gte: Number(minPrice) };
     if (maxPrice) filter.price = { ...filter.price, $lte: Number(maxPrice) };
     if (search) filter.name = { $regex: search, $options: "i" };

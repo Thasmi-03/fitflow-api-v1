@@ -23,11 +23,11 @@ const StylerClothesSchema = new Schema(
       trim: true 
     },
 
-    skinTone: { 
+    skinTone: [{ 
       type: String, 
       enum: ["fair", "light", "medium", "tan", "deep", "dark"],
       trim: true 
-    },
+    }],
 
     gender: { 
       type: String, 
