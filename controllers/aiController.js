@@ -150,3 +150,70 @@ Return ONLY a JSON object with this exact structure (no markdown, no backticks):
     });
   }
 };
+
+export const analyzeCloth = async (req, res) => {
+  try {
+    const { imageUrl } = req.body;
+
+    if (!imageUrl) {
+      return res.status(400).json({ message: "Image URL is required" });
+    }
+
+    if (!process.env.VERTEX_API_KEY) {
+      return res.status(500).json({ message: "Server configuration error: API key missing" });
+    }
+
+    const genAI = new GoogleGenerativeAI(process.env.VERTEX_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+
+    // Fetch image
+    let imageResponse;
+    try {
+      imageResponse = await axios.get(imageUrl, {
+        responseType: 'arraybuffer',
+        timeout: 10000,
+        maxContentLength: 10 * 1024 * 1024,
+      });
+    } catch (fetchError) {
+      return res.status(400).json({ message: "Failed to fetch image from URL", error: fetchError.message });
+    }
+
+    const base64Image = Buffer.from(imageResponse.data, 'binary').toString('base64');
+    const mimeType = imageResponse.headers['content-type'] || 'image/jpeg';
+
+    const prompt = `Analyze this clothing item.
+    1. Identify suitable skin tones from this list ONLY: ['fair', 'light', 'medium', 'tan', 'deep', 'dark'].
+    2. Identify suitable occasions from this list ONLY: ['casual', 'formal', 'business', 'party', 'wedding', 'sports', 'beach'].
+    
+    Return ONLY a JSON object with this structure:
+    {
+      "suitableSkinTones": ["tone1", "tone2"],
+      "occasions": ["occasion1", "occasion2"]
+    }
+    Do not include markdown or backticks.`;
+
+    const imagePart = {
+      inlineData: {
+        data: base64Image,
+        mimeType: mimeType
+      }
+    };
+
+    const result = await model.generateContent([prompt, imagePart]);
+    const response = await result.response;
+    const text = response.text();
+    const cleanText = text.replace(/```json/g, "").replace(/```/g, "").trim();
+
+    try {
+      const jsonResponse = JSON.parse(cleanText);
+      res.status(200).json(jsonResponse);
+    } catch (parseError) {
+      console.error("Error parsing AI response:", cleanText);
+      res.status(500).json({ message: "Failed to parse AI analysis", raw: text });
+    }
+
+  } catch (error) {
+    console.error("Error analyzing cloth:", error);
+    res.status(500).json({ message: "Failed to analyze cloth", error: error.message });
+  }
+};
