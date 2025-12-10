@@ -84,6 +84,18 @@ const PartnerClothSchema = new Schema(
         default: Date.now
       }
     }],
+
+    likes: [{
+      stylerId: {
+        type: Schema.Types.ObjectId,
+        ref: "Styler",
+        required: true
+      },
+      likedAt: {
+        type: Date,
+        default: Date.now
+      }
+    }],
   },
   { timestamps: true }
 );

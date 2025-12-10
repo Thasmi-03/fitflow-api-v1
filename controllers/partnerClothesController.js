@@ -110,7 +110,17 @@ export const getClothById = async (req, res) => {
       if (!isOwner && !isAdmin) return res.status(403).json({ error: "Access denied" });
     }
 
-    res.status(200).json(cloth);
+    // Check if the current user (if styler) has liked this cloth
+    let isLiked = false;
+    if (req.user && req.user.role === "styler") {
+      isLiked = cloth.likes.some(l => String(l.stylerId) === String(req.user._id));
+    }
+
+    // Return cloth with isLiked field
+    const clothData = cloth.toObject();
+    clothData.isLiked = isLiked;
+
+    res.status(200).json(clothData);
   } catch (error) {
     console.error("Error in getClothById:", error);
     res.status(500).json({ error: "Server error: " + error.message });
@@ -377,6 +387,45 @@ export const recordView = async (req, res) => {
     res.status(200).json({ message: "View recorded", viewCount: cloth.views.length });
   } catch (error) {
     console.error("Error in recordView:", error);
+    res.status(500).json({ error: "Server error: " + error.message });
+  }
+};
+
+/** Toggle like on a cloth (styler only) */
+export const toggleLike = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!isValidObjectId(id)) return res.status(400).json({ error: "Invalid ID" });
+
+    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+    if (req.user.role !== "styler") return res.status(403).json({ error: "Styler role required" });
+
+    const cloth = await PartnerCloth.findById(id);
+    if (!cloth) return res.status(404).json({ error: "Cloth not found" });
+
+    // Check if this styler already liked
+    const likeIndex = cloth.likes.findIndex(l => String(l.stylerId) === String(req.user._id));
+
+    let isLiked;
+    if (likeIndex > -1) {
+      // Unlike: remove from likes array
+      cloth.likes.splice(likeIndex, 1);
+      isLiked = false;
+    } else {
+      // Like: add to likes array
+      cloth.likes.push({ stylerId: req.user._id });
+      isLiked = true;
+    }
+
+    await cloth.save();
+
+    res.status(200).json({ 
+      message: isLiked ? "Liked" : "Unliked", 
+      isLiked,
+      likeCount: cloth.likes.length 
+    });
+  } catch (error) {
+    console.error("Error in toggleLike:", error);
     res.status(500).json({ error: "Server error: " + error.message });
   }
 };
