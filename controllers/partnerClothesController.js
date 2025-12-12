@@ -403,21 +403,37 @@ export const toggleLike = async (req, res) => {
     const cloth = await PartnerCloth.findById(id);
     if (!cloth) return res.status(404).json({ error: "Cloth not found" });
 
+    // Import User model
+    const { User } = await import("../models/user.js");
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
     // Check if this styler already liked
     const likeIndex = cloth.likes.findIndex(l => String(l.stylerId) === String(req.user._id));
+    const favoriteIndex = user.favorites.indexOf(id);
 
     let isLiked;
     if (likeIndex > -1) {
       // Unlike: remove from likes array
       cloth.likes.splice(likeIndex, 1);
       isLiked = false;
+      
+      // Remove from user favorites
+      if (favoriteIndex > -1) {
+        user.favorites.splice(favoriteIndex, 1);
+      }
     } else {
       // Like: add to likes array
       cloth.likes.push({ stylerId: req.user._id });
       isLiked = true;
+
+      // Add to user favorites
+      if (favoriteIndex === -1) {
+        user.favorites.push(id);
+      }
     }
 
-    await cloth.save();
+    await Promise.all([cloth.save(), user.save()]);
 
     res.status(200).json({ 
       message: isLiked ? "Liked" : "Unliked", 
