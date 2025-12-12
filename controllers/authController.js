@@ -168,8 +168,12 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // Increment login count
+    // Increment login count and record login timestamp
     user.loginCount = (user.loginCount || 0) + 1;
+    if (!user.loginHistory) {
+      user.loginHistory = [];
+    }
+    user.loginHistory.push(new Date());
     await user.save();
 
     // Generate token

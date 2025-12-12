@@ -172,10 +172,18 @@ export const getAdminAnalytics = async (req, res) => {
             createdAt: { $gte: start, $lt: end }
         });
         
+        // Count logins within this week by checking loginHistory timestamps
+        const loginCount = await User.aggregate([
+            { $unwind: { path: "$loginHistory", preserveNullAndEmptyArrays: true } },
+            { $match: { loginHistory: { $gte: start, $lt: end } } },
+            { $count: "total" }
+        ]);
+        const logins = loginCount.length > 0 ? loginCount[0].total : 0;
+        
         weeklyTrend.push({
             week: `Week ${4 - i}`,
             registrations,
-            logins: 0 // Login tracking not implemented yet
+            logins
         });
     }
     

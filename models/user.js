@@ -55,6 +55,9 @@ const UserSchema = new Schema(
       type: Number,
       default: 0,
     },
+    loginHistory: [{
+      type: Date,
+    }],
   },
   { timestamps: true }
 );
