@@ -367,21 +367,48 @@ export const getSuggestions = async (req, res) => {
 /** Record a view on a cloth (styler only) */
 export const recordView = async (req, res) => {
   try {
+    console.log('=== RECORD VIEW API CALLED ===');
     const { id } = req.params;
-    if (!isValidObjectId(id)) return res.status(400).json({ error: "Invalid ID" });
+    console.log('Cloth ID:', id);
+    console.log('User:', req.user ? {id: req.user._id, role: req.user.role} : 'No user');
+    
+    if (!isValidObjectId(id)) {
+      console.log('ERROR: Invalid ID format');
+      return res.status(400).json({ error: "Invalid ID" });
+    }
 
-    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
-    if (req.user.role !== "styler") return res.status(403).json({ error: "Styler role required" });
+    if (!req.user) {
+      console.log('ERROR: No user found (unauthorized)');
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    
+    if (req.user.role !== "styler") {
+      console.log('ERROR: User role is not styler, role:', req.user.role);
+      return res.status(403).json({ error: "Styler role required" });
+    }
 
     const cloth = await PartnerCloth.findById(id);
-    if (!cloth) return res.status(404).json({ error: "Cloth not found" });
+    if (!cloth) {
+      console.log('ERROR: Cloth not found');
+      return res.status(404).json({ error: "Cloth not found" });
+    }
+
+    console.log('Cloth found:', cloth.name);
+    console.log('Current views count:', cloth.views?.length || 0);
+    console.log('Checking if styler already viewed...');
 
     // Check if this styler already viewed (avoid duplicate views)
     const alreadyViewed = cloth.views.some(v => String(v.stylerId) === String(req.user._id));
 
+    console.log('Already viewed?', alreadyViewed);
+
     if (!alreadyViewed) {
+      console.log('Adding new view for styler:', req.user._id);
       cloth.views.push({ stylerId: req.user._id });
       await cloth.save();
+      console.log('View saved! New view count:', cloth.views.length);
+    } else {
+      console.log('Styler has already viewed this cloth, not adding duplicate view');
     }
 
     res.status(200).json({ message: "View recorded", viewCount: cloth.views.length });
